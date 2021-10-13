@@ -24,7 +24,7 @@ public class Problem8LeetCode206ReverseLinkedList {
         item4.next = item5;
 
         Solution solution = new Solution();
-        ListNode listNode = solution.reverseListRecursion(head);
+        ListNode listNgode = solution.reverseListRecursion(head);
 
     }
 
