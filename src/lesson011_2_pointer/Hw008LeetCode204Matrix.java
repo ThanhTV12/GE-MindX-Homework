@@ -1,4 +1,4 @@
-package lesson011;
+package lesson011_2_pointer;
 
 public class Hw008LeetCode204Matrix {
     class Solution {

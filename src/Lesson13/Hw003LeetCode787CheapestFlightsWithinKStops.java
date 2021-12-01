@@ -22,7 +22,7 @@ public class Hw003LeetCode787CheapestFlightsWithinKStops {
         public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {
             // Created a weighted graph
             // Node: (city, most number of stop) => number of nodes = n * k
-            // edge: flighs => number of edge = flights.length;
+            // edge: flights => number of edge = flights.length;
             // use Dijkstra to travel from node(src, k + 1) to node(dst, ...) to find the shortest way (cheapest)
             // return value;
             // time complexity = O(lights.length * log(n*k))

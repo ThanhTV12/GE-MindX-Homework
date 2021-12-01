@@ -1,4 +1,4 @@
-package lesson011.other;
+package lesson011_2_pointer.other;
 
 import java.util.HashMap;
 import java.util.Map;

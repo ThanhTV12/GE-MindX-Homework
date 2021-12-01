@@ -14,4 +14,7 @@ A. BTS need to read again
 ## Heap
 6. https://leetcode.com/problems/minimum-cost-to-connect-sticks
 7. https://leetcode.com/problems/top-k-frequent-elements/submissions/
+
+## union find
+https://leetcode.com/problems/graph-connectivity-with-threshold (so hard)
    
