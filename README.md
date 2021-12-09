@@ -17,4 +17,9 @@ A. BTS need to read again
 
 ## union find
 https://leetcode.com/problems/graph-connectivity-with-threshold (so hard)
+
+
+## minimum spanning tree - krushka
+https://leetcode.com/problems/connecting-cities-with-minimum-cost/
+https://leetcode.com/problems/optimize-water-distribution-in-a-village/
    
