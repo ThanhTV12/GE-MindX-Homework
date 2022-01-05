@@ -1,0 +1,87 @@
+Question 1. What is database index? How is it implemented under the hood?
+=> Index is a data structure that improves the speed of data retrieval operations
+=> Index creates 1 data structure that allows mapping value of a specified property to the record's address
+=> when query to get data. it gets addresses from index table first then it use those addresses to get record
+
+It was implemented by one of the kinds
+1. HashTable => store pairs of value and address using key - value
+2. B+Tree, B Tree => self-balanced tree
+3. SSTables index => apache casandra
+
+Question 2. Why don’t we index every columns to support fast read?
+
+1. index uses memory to store data => increasing cost for storing
+2. When insert data, they are stored both index area and their data area => affect to performance when insert data
+3. There might be fields that don't use as inputs of queries. Don't need to mark index
+
+Question 3. How does Hash Indexes work? What is its disadvantages?
+1. Hash indexes  uses the data structure named HashTable, it stores key-value. key is hash code of index column, values is corresponding record's address
+2. Disadvantages
+- be only useful for exact look for
+- doesn't support range value, unequal condition (> , < , >=, <=)
+- Hash index don't support partial key matching if create index on 2 colum c1, c1. it is not working if query by only c1 or c2
+- Be unstable by hashtable collision
+
+Question 4. Compare B+Tree and B-Tree
+1. B+Tree
+=> just store pointer to record ad leaf node
+=> Leaf nodes are connected 2-ways (looks like a Doubly Linked List)
+=> duplicate key between level of key
+
+2. B Tree
+=> Store pointer to record both inner node and leaf node
+=> leaf-node are not connected
+=> No duplicate key between level of key
+
+Question 5. Why use B+Tree for index, not BST/AVL/Red-Black Tree
+
+1. in terms of comparing B+Tree <=> BST
+B+Tree is self-balanced tree, BST is not => B+Tree's performance is stable
+
+2. when it comes to comparing B+Tree <=> Red-Black Tree(self-balancing binary search tree)
+- each node of Red-Black Tree store only item => is worse when want to get the continuous values
+- Red-Black Tree doesn't connect leaf node like B+Tree => is worse when want to get a range of value
+==> B+Tree is most effective if you want to look up by a range
+
+6. What is B+Tree indexes ’s disadvantage?
+=> implement more complicated than hash Tree
+=> when query exactly the performance is less than Hash Tree , Hash Tree (O(1)), B+Tree (Log(N))
+
+7. given B+Tree index (C1, C2, C3), can B+Tree support query on C2?
+=> B+Tree can support query on C2
+=> the key value was concatenate c1, c2, c3 when query on C2 it use all values of c1 and c3 and specify only c2
+
+8. Compare B+Tree index and Hash index?
+=> B+Tree:
+ - self-balanced tree => performance is stable
+ - time complexity 0(log(n))
+ - Allows Matching leftmost prefix: if create index (Col1, Col2, Col3) => B+Tree index can support query on (Col1)
+ - support for query by condition value ( >, < , >=, <=)
+ - support query by range
+=>  Hash index
+- Hash table => performance is unstable => worst case time O(n)
+- time complexity average 0(log(n))
+- doesn't support leftmost prefix
+- just allows query exactly, doesn't support condition value
+- doesn't support query by a range
+
+9. What happens to index when database machine crashes?
+=> Database use write ahead log (WAL) to store modifications before update to B+Tree
+=> when database comes back after crash, B+Tree was load from log
+
+10. What are diff between clustered index and non-clustered index.
+=> clustered index
+- The index that defines the order that was used to store data on disk (it's primary key as usual)
+- there is only one clustered index.
+
+=> non-clustered index
+- create a new data area to store data key - value between has code of column to the address of row
+- can have multiple non-clustered indexes.
+
+11. Should we index boolean column?
+- should not create index boolean column
+- in terms of "Selectivity" value
+selectivity = the number of distinct value / the number of rows
+for index boolean type.=> the number of distinct value = 2
+=> selectivity ~0
+=> when query it still scan all rows event it crate index for boolean column
