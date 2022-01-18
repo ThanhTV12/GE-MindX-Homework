@@ -1,0 +1,116 @@
+Question 01. How to store password in Database securely?
+1. plain text:
+    - if hacker can access and retrieve the database. it can get the passwords and use them to login
+=> avoid
+2. encode(encrypted)
+    - the password is reversible
+    - hacker can register a account. of course they know their password. they compare their password with the encoded password to guess the encryption algorithm
+=> avoid
+3. hash function
+    - irreversible
+    - choose function: SHA256, SHA512
+    - avoid MD5, SHA1 because: - high chance of collision (2 keys have the same hashed value)
+                               - there public directory
+    - hacker: use strong computer to brute force
+    - upgrade
+        - use: hash(password + salt + pepper)
+            salt: random value for each password. it is stored on database
+            pepper: (secret key), it's loaded from the secret service (aws secret key management)
+        - use slow hash function: (bcrypt, scrypt)
+
+Question 02. Symmetric vs Asymmetric encryption?
+- common: use keys to encrypt data, sender encrypted data and then sends to the receivers. the receiver decrypts to data
+- (in terms of) Symmetric: use the same key
+- (when it comes to) Asymmetric: use a pair of public key and private key
+                            + public key is public to senders. sender use the public key to encrypt
+                            + the receiver use private key(secret key) to decrypt
+                        + example RSA
+Question 03. How RSA work?
+    1. The receiver generates a pair of public key and private key
+    2. Copy public key for senders
+    3. The senders use the public key to encrypt messages and then send them to receiver via public channel (anyone can see encrypted message but can not decrypt them)
+     c = encrypt(m , pk)
+    4. The receiver uses private key to decrypt
+     m = decrypt(c, sk)
+    regarding RSA for authentication (verify that the message was not altered)
+    - to verify the message has been sent by correct entity which claims to sent it. and to prove the message was not altered or tampered
+    - How it works
+    + Step 1: The signer(sender) create a hash(m)
+    + Step 2: The signer create a digital signature from hash(m)
+           signature = encrypt(hash(m), sk(private key of sender))
+    + Step 3: The Sender Sends message to receiver including (m, signature, hash_function)
+    + Step 4: The receiver receives the message
+    + Step 5: -  The receiver uses hash_function to generate hashed message => hash(m)
+              -  The receiver decrypt the signature to get hash(m) => reproduce_hash(m) = decrypt(signature, pk(public ky of sender))
+    + Step 6: Compare hash(m) and reproduce_hash(m)
+Question 04. How HTTPS work?
+    - HTTPs uses encryption protocol to encrypt communication (TLS (Transfer layer security)) that is asymmetric encryption that uses a pair of public key and private key (RSA) to encrypt/decrypt
+    - Before client and server can send and receive message securely they need to use TLS handshake to verify each other and exchange necessary information
+Question 05. What happen during TLS Handshake?
+    - Step 1: client send hello message to server
+    - Step 2: sever send hello message to client
+    - Step 3: Client confirm server's identify by checking ssl certificate using rsa encryption
+            - ssl certificate including: domain, CA's digital signature, which Certificate authority (CA) issued it, server's public key
+            - uses RSA's authentication
+            - browser get public key from CA
+            - use public key to decrypt the CA signature
+            - compare decrypted data
+   - Step 4: client generate pre-master secret, then encrypt by server's public key before send to the server
+   - Step 5: Server decrypt the encrypted pre-master secret to pre-master secret
+   => Step 4, Step 5. Both client and server have a same secret key (pre-master secret)
+   - Step 6: Client and server generate session_key = hash(pre-master key, client_hello.random, server_hello.random)
+   - Step 7. Client send "finished" message to server that uses session_key to encrypt
+   - Step 8. Server send "finished" message to client that uses session_key to encrypt
+   => TLS handshake is completed => client and server communicate each other by symmetric encryption using session key
+
+Question 06. Why use symmetric encryption for exchanging data instead of asymmetric encryption?
+  => symmetric encryption is more easy . So it make exchanging data get faster
+  => Because it just use session keu for each session so it's secure because other sides can not get session key
+
+Question 07. What is the use of client random and server random in TLS handshake?
+  => avoid replay attack => if no client random and server random. hacker can capture the keys and resend
+
+Question 08. What is CORS?
+    => CORS (cross-origin resource sharing) => is a mechanism to bypass SOP (Same origin policy)
+    - Origin: including:
+           + protocol (http, https)
+           + host
+           + port
+    - SOP (Same origin policy)
+           + (browser manage) => A web application only request from same origin with the origin that the web was loaded from
+   => use CORS => define which origins can request
+
+Question 09. How to prevent SQL injection?
+    => is a web security vulnerability that allows a attacker to interfere with queries and execute when execute queries
+    => avoid SQL injection
+    - Use prepared statements to distinguish between data and code. So commands that input outside can not be executed
+
+Question  10. How do you implement authentication?
+    - first user have to make login for the authentication
+    2 ways: => cookie-based authentication (state full) both server and browser store authentication information. when client call to server. it get data from cookie and then send to server. server use stored data to verify
+            => token-based authentication (state less) after login successfully  server generate a token (JWT) then send it to client.
+            - Client store it and use it to bypass when make calls of api
+            - Server don't store authentication information. it verify by decrypting token
+Question  11. How JWT work? Pros & Cons? How to revoke JWT from server?
+    - JWT is a standard way for securely transmitting data between client and server
+    - How it work:
+    Step 1: The client request login to server, if the credential is valid, server returns jwt token
+    Step 2: when the client calls other secure apis. they calls and attach the jwt token to assure role or get permission to execute api
+
+    Pros:
+        - Stateless: server don't need store authentication info. all info was packed on the token. and it was store at client
+        - token was sent with the request along the request header. So it eliminates CSRF (cross-site request forgery)
+    cons:
+        - the server has to solve the case when want to expire token by sever side
+        => Because the expire time of the token was packed on the token. So if the server wants to expire them. it have to save the expired tokens and check for each request
+        - Revocation when another one uses the token
+        => Has to check ip and session id or browser id
+
+    revoke token from server
+    => Because the expire time of the token was packed on the token. So if the server wants to expire them. it have to save the expired tokens and check for each request
+
+12. 2 users in diff location login with same JWT, how to warn user?
+=>
+13. Access token vs Refresh token
+14. https://github.com/alex/what-happens-when
+15. Hashing vs Encoding vs Encryption? When to use each of them?
